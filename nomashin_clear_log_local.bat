@@ -36,7 +36,18 @@ if %ERRORLEVEL% neq 0 (
 
 echo Сервис NoMachine успешно остановлен
 
-REM Подождать несколько секунд для завершения остановки служб
+REM Завершение оставшихся процессов NoMachine
+echo Завершение процессов nxplayer.bin и nxrunner.bin...
+taskkill /f /im nxplayer.bin
+taskkill /f /im nxrunner.bin
+
+REM Проверка успешности завершения процессов
+if %ERRORLEVEL% neq 0 (
+    echo Не удалось завершить один или несколько процессов NoMachine
+    exit /b %ERRORLEVEL%
+)
+
+REM Подождать несколько секунд для завершения остановки служб и завершения процессов
 timeout /t 10 /nobreak
 
 REM Проверка наличия файлов в папке перед удалением
