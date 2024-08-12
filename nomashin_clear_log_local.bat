@@ -1,20 +1,31 @@
 @echo off
 
-REM Определение переменной пути к NoMachine по умолчанию
-set NOMACHINE_PATH=C:\Program Files\NoMachine
-
 REM Проверка наличия NoMachine в Program Files (x86)
 if exist "C:\Program Files (x86)\NoMachine\bin\nxserver.exe" (
+    echo NoMachine найден в Program Files (x86)
     set NOMACHINE_PATH=C:\Program Files (x86)\NoMachine
-) else if exist "C:\Program Files\NoMachine\bin\nxserver.exe" (
-    REM NoMachine уже установлен в Program Files, путь оставляем без изменений
+) else (
+    echo NoMachine не найден в Program Files (x86)
+)
+
+REM Проверка наличия NoMachine в Program Files
+if exist "C:\Program Files\NoMachine\bin\nxserver.exe" (
+    echo NoMachine найден в Program Files
     set NOMACHINE_PATH=C:\Program Files\NoMachine
 ) else (
-    echo NoMachine не найден ни в Program Files, ни в Program Files (x86)
+    echo NoMachine не найден в Program Files
+)
+
+REM Проверка, установлен ли путь к NoMachine
+if not defined NOMACHINE_PATH (
+    echo NoMachine не найден ни в одной из проверенных директорий
     exit /b 1
 )
 
-REM Остановить сервис NoMachine
+echo Путь к NoMachine установлен: %NOMACHINE_PATH%
+
+REM Остановка сервиса NoMachine
+echo Попытка остановить сервис NoMachine...
 "%NOMACHINE_PATH%\bin\nxserver.exe" --stop
 
 REM Проверка успешности остановки сервиса
@@ -23,10 +34,13 @@ if %ERRORLEVEL% neq 0 (
     exit /b %ERRORLEVEL%
 )
 
+echo Сервис NoMachine успешно остановлен
+
 REM Подождать несколько секунд для завершения остановки служб
 timeout /t 10 /nobreak
 
-REM Очистить папку C:\ProgramData\NoMachine\var\log\node
+REM Очистить папку с логами
+echo Очистка папки C:\ProgramData\NoMachine\var\log\node
 del /q "C:\ProgramData\NoMachine\var\log\node\*"
 
 REM Проверка успешности удаления файлов
@@ -35,10 +49,13 @@ if %ERRORLEVEL% neq 0 (
     exit /b %ERRORLEVEL%
 )
 
-REM Подождать несколько секунд (60) перед запуском сервиса
+echo Папка C:\ProgramData\NoMachine\var\log\node успешно очищена
+
+REM Подождать несколько секунд перед запуском сервиса
 timeout /t 60 /nobreak
 
-REM Запустить сервис NoMachine
+REM Запуск сервиса NoMachine
+echo Попытка запустить сервис NoMachine...
 "%NOMACHINE_PATH%\bin\nxserver.exe" --start
 
 REM Проверка успешности запуска сервиса
@@ -47,5 +64,5 @@ if %ERRORLEVEL% neq 0 (
     exit /b %ERRORLEVEL%
 )
 
-echo Операция успешно завершена
+echo Сервис NoMachine успешно запущен
 exit /b 0
