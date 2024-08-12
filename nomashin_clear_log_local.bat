@@ -39,6 +39,10 @@ echo Сервис NoMachine успешно остановлен
 REM Подождать несколько секунд для завершения остановки служб
 timeout /t 10 /nobreak
 
+REM Проверка наличия файлов в папке перед удалением
+echo Проверка наличия файлов в папке C:\ProgramData\NoMachine\var\log\node
+dir "C:\ProgramData\NoMachine\var\log\node"
+
 REM Очистить папку с логами
 echo Очистка папки C:\ProgramData\NoMachine\var\log\node
 del /q "C:\ProgramData\NoMachine\var\log\node\*"
@@ -47,9 +51,13 @@ REM Проверка успешности удаления файлов
 if %ERRORLEVEL% neq 0 (
     echo Не удалось очистить папку C:\ProgramData\NoMachine\var\log\node
     exit /b %ERRORLEVEL%
+) else (
+    echo Папка C:\ProgramData\NoMachine\var\log\node успешно очищена
 )
 
-echo Папка C:\ProgramData\NoMachine\var\log\node успешно очищена
+REM Проверка наличия файлов в папке после удаления
+echo Проверка наличия файлов в папке C:\ProgramData\NoMachine\var\log\node после очистки
+dir "C:\ProgramData\NoMachine\var\log\node"
 
 REM Подождать несколько секунд перед запуском сервиса
 timeout /t 60 /nobreak
