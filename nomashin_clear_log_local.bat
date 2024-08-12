@@ -24,17 +24,29 @@ if not defined NOMACHINE_PATH (
 
 echo Путь к NoMachine установлен: %NOMACHINE_PATH%
 
-REM Остановка сервиса NoMachine
-echo Попытка остановить сервис NoMachine...
+REM Остановка процесса nxservice64.exe
+echo Попытка завершить процесс nxservice64.exe...
+taskkill /f /im nxservice64.exe
+
+REM Проверка успешности завершения процесса
+if %ERRORLEVEL% neq 0 (
+    echo Не удалось завершить процесс nxservice64.exe
+    exit /b %ERRORLEVEL%
+)
+
+echo Процесс nxservice64.exe успешно завершен
+
+REM Остановка сервиса NoMachine через nxserver
+echo Попытка остановить сервис NoMachine через nxserver...
 "%NOMACHINE_PATH%\bin\nxserver.exe" --stop
 
 REM Проверка успешности остановки сервиса
 if %ERRORLEVEL% neq 0 (
-    echo Не удалось остановить сервис NoMachine
+    echo Не удалось остановить сервис NoMachine через nxserver
     exit /b %ERRORLEVEL%
 )
 
-echo Сервис NoMachine успешно остановлен
+echo Сервис NoMachine через nxserver успешно остановлен
 
 REM Завершение оставшихся процессов NoMachine
 echo Завершение процессов nxplayer.bin и nxrunner.bin...
@@ -73,13 +85,23 @@ dir "C:\ProgramData\NoMachine\var\log\node"
 REM Подождать несколько секунд перед запуском сервиса
 timeout /t 60 /nobreak
 
-REM Запуск сервиса NoMachine
-echo Попытка запустить сервис NoMachine...
+REM Запуск процесса nxservice64.exe
+echo Попытка запустить процесс nxservice64.exe...
+start "" "%NOMACHINE_PATH%\bin\nxservice64.exe" --servicemode
+
+REM Проверка успешности запуска процесса
+if %ERRORLEVEL% neq 0 (
+    echo Не удалось запустить процесс nxservice64.exe
+    exit /b %ERRORLEVEL%
+)
+
+REM Запуск сервиса NoMachine через nxserver
+echo Попытка запустить сервис NoMachine через nxserver...
 "%NOMACHINE_PATH%\bin\nxserver.exe" --start
 
 REM Проверка успешности запуска сервиса
 if %ERRORLEVEL% neq 0 (
-    echo Не удалось запустить сервис NoMachine
+    echo Не удалось запустить сервис NoMachine через nxserver
     exit /b %ERRORLEVEL%
 )
 
