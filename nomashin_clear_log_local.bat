@@ -1,12 +1,14 @@
 @echo off
 
-REM Определение переменной пути к NoMachine
-set NOMACHINE_PATH=%PROGRAMFILES%\NoMachine
+REM Определение переменной пути к NoMachine по умолчанию
+set NOMACHINE_PATH=C:\Program Files\NoMachine
 
-if exist "%PROGRAMFILES(X86)%\NoMachine\bin\nxserver.exe" (
-    set NOMACHINE_PATH=%PROGRAMFILES(X86)%\NoMachine
-) else if exist "%PROGRAMFILES%\NoMachine\bin\nxserver.exe" (
-    set NOMACHINE_PATH=%PROGRAMFILES%\NoMachine
+REM Проверка наличия NoMachine в Program Files (x86)
+if exist "C:\Program Files (x86)\NoMachine\bin\nxserver.exe" (
+    set NOMACHINE_PATH=C:\Program Files (x86)\NoMachine
+) else if exist "C:\Program Files\NoMachine\bin\nxserver.exe" (
+    REM NoMachine уже установлен в Program Files, путь оставляем без изменений
+    set NOMACHINE_PATH=C:\Program Files\NoMachine
 ) else (
     echo NoMachine не найден ни в Program Files, ни в Program Files (x86)
     exit /b 1
@@ -33,7 +35,7 @@ if %ERRORLEVEL% neq 0 (
     exit /b %ERRORLEVEL%
 )
 
-REM Подождать несколько секунд(60) перед запуском сервиса
+REM Подождать несколько секунд (60) перед запуском сервиса
 timeout /t 60 /nobreak
 
 REM Запустить сервис NoMachine
