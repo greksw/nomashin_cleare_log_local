@@ -1,6 +1,19 @@
 @echo off
+
+REM Определение переменной пути к NoMachine
+set NOMACHINE_PATH=%PROGRAMFILES%\NoMachine
+
+if exist "%PROGRAMFILES(X86)%\NoMachine\bin\nxserver.exe" (
+    set NOMACHINE_PATH=%PROGRAMFILES(X86)%\NoMachine
+) else if exist "%PROGRAMFILES%\NoMachine\bin\nxserver.exe" (
+    set NOMACHINE_PATH=%PROGRAMFILES%\NoMachine
+) else (
+    echo NoMachine не найден ни в Program Files, ни в Program Files (x86)
+    exit /b 1
+)
+
 REM Остановить сервис NoMachine
-"%PROGRAMFILES%\NoMachine\bin\nxserver" --stop
+"%NOMACHINE_PATH%\bin\nxserver.exe" --stop
 
 REM Проверка успешности остановки сервиса
 if %ERRORLEVEL% neq 0 (
@@ -24,7 +37,7 @@ REM Подождать несколько секунд(60) перед запус
 timeout /t 60 /nobreak
 
 REM Запустить сервис NoMachine
-"%PROGRAMFILES%\NoMachine\bin\nxserver" --start
+"%NOMACHINE_PATH%\bin\nxserver.exe" --start
 
 REM Проверка успешности запуска сервиса
 if %ERRORLEVEL% neq 0 (
@@ -34,4 +47,3 @@ if %ERRORLEVEL% neq 0 (
 
 echo Операция успешно завершена
 exit /b 0
-ChatGPT
